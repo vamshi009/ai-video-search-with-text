@@ -5,6 +5,7 @@ from convert_video_to_audio import *
 from convert_audio_to_text import *
 import random
 from play_audio import *
+from play_video import *
 
 
 def search_audio_using_text(text):
@@ -29,6 +30,20 @@ def play_audio_using_path(path):
     number = count
 
     play_sound_from_file('InputAudioChunks/AudioSplits_' + str(number) + '/' + path)
+
+def play_video_using_time_indices(time_dict):
+    count = 0
+    for (root, dir, files) in os.walk('InputVideo/'):
+        for f in files:
+            count = count + 1
+    number = count
+
+    start_time = time_dict['start_time']
+    end_time = time_dict['end_time']
+    save_subclip('InputVideo/video_' + str(number), start_time, end_time)
+    #play_video_from_file()
+    play_video_with_audio()
+
 
 def url_processor(url):
 

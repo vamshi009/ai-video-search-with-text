@@ -40,11 +40,21 @@ def get_large_audio_transcription_on_silence(path, folder_name_for_chunks):
     whole_text = ""
     # process each chunk 
     audio_to_text = {}
+    start_time = 0
+    end_time = 0
     for i, audio_chunk in enumerate(chunks, start=1):
         # export audio chunk and save it in
         # the `folder_name` directory.
         chunk_filename = os.path.join(folder_name, f"chunk{i}.wav")
         audio_chunk.export(chunk_filename, format="wav")
+        print(type(audio_chunk))
+        print(audio_chunk)
+        print(audio_chunk.__dir__())
+        print(audio_chunk.sample_width)
+        print(audio_chunk.frame_width)
+        print(audio_chunk.duration_seconds)
+        start_time = end_time
+        end_time = end_time + audio_chunk.duration_seconds + 0.005
         # recognize the chunk
         try:
             text = transcribe_audio(chunk_filename)
@@ -53,7 +63,7 @@ def get_large_audio_transcription_on_silence(path, folder_name_for_chunks):
         else:
             text = f"{text.capitalize()}. "
             print(chunk_filename, ":", text)
-            audio_to_text[f"chunk{i}.wav"] = text
+            audio_to_text[f"chunk{i}.wav"] = {"text":text, "start_time":start_time, "end_time": end_time}
             whole_text += text
     # return the text for all chunks detected
     with open(folder_name_for_chunks+"/txt_to_aud.pkl", 'wb') as f:
@@ -70,13 +80,14 @@ def search_audio(folder_name_for_chunks, text):
     check = 0
     list_of_keys = []
     list_of_vals = []
-    for key, val in audio_to_text.items():
+    for key, dict_val in audio_to_text.items():
+        val = dict_val['text']
         if((text.lower() in val.lower()) or (val.lower() in text.lower())):
             audio = key
             check = 1
             print("found")
             list_of_keys.append(key)
-            list_of_vals.append(val)
+            list_of_vals.append(dict_val)
     
     if(check==0):
         print("no luck...")

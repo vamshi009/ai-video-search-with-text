@@ -9,10 +9,12 @@ def process_url():
 def search_video_using_text():
     text = e2.get()
     audio_key_list, search_result_list = search_audio_using_text(text)
-    for val in search_result_list:
+    for dict_val in search_result_list:
+        val = dict_val['text']
         result_box_title.insert(END, f"{val:<6s}")
         result_box_title.insert(END,"\n")
     play_audio_using_path(audio_key_list[0])
+    play_video_using_time_indices(search_result_list[0])
 
 
 master = Tk()
